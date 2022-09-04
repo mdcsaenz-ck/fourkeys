@@ -26,6 +26,10 @@ import sys
 
 from hashlib import sha1
 from urllib.request import Request, urlopen
+import ssl
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
 
 
 def make_changes(num_changes, vcs, event_timespan, before=None):
@@ -263,7 +267,7 @@ def post_to_webhook(vcs, webhook_url, secret, event_type, data, token=None):
 
     request = make_webhook_request(vcs, webhook_url, secret, event_type, data, token)
 
-    response = urlopen(request)
+    response = urlopen(request, context=ctx)
 
     if response.getcode() == 204:
         return 1
